@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Wires Game in p5.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        let stars = [];
+        let numStars = 200;
+        let circles = [];
+        let selectedCircles = [];
+        let lines = [];
+        let radius;
+        let columnWidth;
+        let rowHeight;
+        let offsetUp;
+        let lineWidth = 8;
+        let gameCompleted = false;  // Track if the game is completed
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            radius = height * 0.05; // Set radius based on height
+            columnWidth = width * 0.15; // Set column width based on width
+            rowHeight = height * 0.2; // Set row height based on height
+            offsetUp = height * 0.05; // Set offset based on height
+
+            generateStars();
+            generateCircles();
+        }
+
+        function draw() {
+            background(0);  // Black background for the night sky
+            moveStars();
+            drawStars();
+            drawTable();
+            drawCircles();
+            drawLines();
+            drawInstructions();
+            drawRestartButton();
+
+            // Check if the game is completed
+            if (gameCompleted) {
+                fill(255);
+                textSize(32);
+                textAlign(CENTER, CENTER);
+                text("Congratulations! You've completed the game.", width / 2, height / 2);
+                text("Redirecting to the home page...", width / 2, height / 2 + 40);
+                setTimeout(() => {
+                    window.location.href = "main.html";  // Change to your home page filename
+                }, 3000);  // Redirect after 3 seconds
+            }
+        }
+
+        // Generate stars for the background
+        function generateStars() {
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: random(width),
+                    y: random(height),
+                    brightness: random(150, 255),
+                    speed: random(0.5, 1.5)
+                });
+            }
+        }
+
+        // Move stars for twinkling effect
+        function moveStars() {
+            for (let star of stars) {
+                star.y += star.speed;
+                if (star.y > height) star.y = 0;  // Reset star when it moves off-screen
+            }
+        }
+
+        // Draw stars
+        function drawStars() {
+            for (let star of stars) {
+                fill(star.brightness);
+                noStroke();
+                ellipse(star.x, star.y, random(1, 3));
+            }
+        }
+
+        // Generate the circle positions
+        function generateCircles() {
+            circles.push({x: width / 2 - columnWidth, y: height / 2 - rowHeight * 0.5 - offsetUp, color: 'red'});
+            circles.push({x: width / 2 + columnWidth, y: height / 2 - rowHeight * 0.5 - offsetUp, color: 'blue'});
+            circles.push({x: width / 2 - columnWidth, y: height / 2 + rowHeight * 0.5 - offsetUp, color: 'green'});
+            circles.push({x: width / 2 + columnWidth, y: height / 2 + rowHeight * 0.5 - offsetUp, color: 'red'});
+            circles.push({x: width / 2 - columnWidth, y: height / 2 + rowHeight * 1.5 - offsetUp, color: 'blue'});
+            circles.push({x: width / 2 + columnWidth, y: height / 2 + rowHeight * 1.5 - offsetUp, color: 'green'});
+        }
+
+        // Draw circles with optional glow effect for selected circles
+        function drawCircles() {
+            for (let circle of circles) {
+                fill(circle.color);
+                ellipse(circle.x, circle.y, radius * 2);
+                stroke(0);  // Black border
+                ellipse(circle.x, circle.y, radius * 2);
+                // If selected, add glow effect
+                if (selectedCircles.includes(circle)) {
+                    stroke(255, 255, 255, 50);
+                    strokeWeight(10);
+                    ellipse(circle.x, circle.y, radius * 2 + 8);
+                }
+                noStroke();
+            }
+        }
+
+        // Draw the game table
+        function drawTable() {
+            stroke(255);  // White lines for the table
+            noFill();
+            for (let col of [-columnWidth, columnWidth]) {
+                for (let row of [-rowHeight, 0, rowHeight]) {
+                    rect(width / 2 + col - columnWidth / 2, height / 2 + row - rowHeight / 2 + 20, columnWidth, rowHeight);
+                }
+            }
+        }
+
+        // Draw instructions
+        function drawInstructions() {
+            fill(255);
+            textSize(18);
+            text("Connect The Wires To Help The Alien", 565, 20);
+            text("Click two circles of the same color to connect them.", 500, 60);
+        }
+
+        // Draw lines connecting the circles
+        function drawLines() {
+            strokeWeight(lineWidth);
+            for (let line of lines) {
+                drawCurvedLine(line[0], line[1], line[2]);
+            }
+        }
+
+        // Draw a curved line between two points
+        function drawCurvedLine(start, end, color) {
+            let midX = (start.x + end.x) / 2;
+            let midY = (start.y + end.y) / 2 - 50;  // Curve offset
+
+            stroke(color);
+            noFill();
+            beginShape();
+            vertex(start.x, start.y);
+            quadraticVertex(midX, midY, end.x, end.y);  // Create the curve
+            endShape();
+        }
+
+        // Draw the restart button
+        function drawRestartButton() {
+            fill(0, 128, 0);  // Green button
+            rect(350, height - 50, 100, 40);
+            fill(255);
+            textSize(20);
+            text("Restart", 360, height - 20);
+        }
+
+        // Handle mouse click
+        function mousePressed() {
+            // Check if the restart button is clicked
+            if (mouseX > 350 && mouseX < 450 && mouseY > height - 50 && mouseY < height - 10) {
+                selectedCircles = [];
+                lines = [];
+                gameCompleted = false;  // Reset game completion status
+                return;
+            }
+
+            // Check if a circle is clicked
+            for (let circle of circles) {
+                let d = dist(mouseX, mouseY, circle.x, circle.y);
+                if (d < radius) {
+                    if (!selectedCircles.includes(circle)) {
+                        selectedCircles.push(circle);
+                    }
+                    
+                    // If two circles are selected
+                    if (selectedCircles.length == 2) {
+                        if (selectedCircles[0].color == selectedCircles[1].color) {
+                            lines.push([selectedCircles[0], selectedCircles[1], selectedCircles[0].color]);
+                        }
+                        selectedCircles = [];  // Reset selection after connecting
+                        
+                        // Check if the game is completed
+                        if (lines.length === 3) { // 3 connections needed to complete
+                            gameCompleted = true; 
+                        }
+                    }
+                }
+            }
+        }
+
+        // Handle window resize
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+            radius = height * 0.05;
+            columnWidth = width * 0.15;
+            rowHeight = height * 0.2;
+            offsetUp = height * 0.05;
+            generateCircles(); // Regenerate circles to adjust their positions
+        }
+    </script>
+</body>
+</html>

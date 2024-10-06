@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExoLearn</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background-image: url('https://th.bing.com/th/id/R.f81802946c064d7d41cc1b38d7ba9db6?rik=CQTsxFamb8nShg&riu=http%3a%2f%2fwallpapercave.com%2fwp%2ftlxFHZF.jpg&ehk=ljoI%2bTRafrSgOo71At4hBBjokO5XFjLEYBib9G4YSjk%3d&risl=&pid=ImgRaw&r=0'); /* Background image */
+            background-size: cover; /* Covers the entire page */
+            background-repeat: no-repeat; /* Prevents repeating */
+            background-position: center; /* Centers the image */
+            overflow: hidden;
+        }
+
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999; /* On top of everything */
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #splash-screen video {
+            width: 100%;  /* Scale video to screen */
+            height: 100%;  /* Scale video to screen */
+            object-fit: cover; /* Maintain aspect ratio */
+        }
+
+        /* Hide the content until the video ends */
+        #home-content {
+            display: none;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .planet-image {
+            position: absolute;
+            top: 30%;
+            left: 400px;
+            transform: translateY(-50%);
+            max-width: 150px;
+        }
+
+        .logo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            max-width: 120px; /* Adjust logo size */
+        }
+
+        .astronaut {
+            position: absolute;
+            left: 1px; /* Distance from the left edge */
+            bottom: 1px; /* Distance from the bottom edge */
+            max-width: 500px; /* Adjust size */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <video id="intro-video" autoplay muted>
+            <source src="D:\Downloads\WhatsApp Video 2024-10-06 at 01.58.35.mp4" type="video/mp4"> <!-- Update with a valid video path -->
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Home Page Content -->
+    <div id="home-content">
+        <img class="logo" src="D:\Downloads\WhatsApp_Image_2024-10-06_at_00.34.28-removebg-preview.png" alt="ExoLearn Logo"> <!-- Update with a valid logo path -->
+
+        <a href="planet1-page.html"> 
+            <img class="planet-image" src="D:\Downloads\941584D3-946A-45D0-BCF0-E3C9EE-unscreen 2.gif" alt="Planet Image"> <!-- Update with a valid planet image path -->
+        </a>
+
+        <img class="astronaut" src="D:\Downloads\Astronot.gif"  alt="Astronaut GIF"> <!-- Update with a valid astronaut image path -->
+    </div>
+
+    <script>
+        const introVideo = document.getElementById('intro-video');
+        const splashScreen = document.getElementById('splash-screen');
+    
+        // Hide splash screen and redirect to the game page when the video ends
+        introVideo.addEventListener('ended', function() {
+            splashScreen.style.display = 'none';
+            window.location.href = 'game.html'; // Redirect to the game page
+        });
+    </script>
+    
+
+</body>
+</html>
